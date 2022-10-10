@@ -6,9 +6,9 @@ taulukkoon. Voit keksiä päiville haluamasi työtunnit, rehellinen pitää kuit
 */
 
 const työpäiväTaulukko = (...tunnit) => {
-    let taulukko = []
-    tunnit.forEach((key, index) => taulukko[index] = key)
-    return taulukko
+  let taulukko = []
+  tunnit.forEach((key, index) => (taulukko[index] = key))
+  return taulukko
 }
 
 console.log(työpäiväTaulukko(7, 7, 6, 6, 7))
@@ -24,17 +24,17 @@ b) reduce -funktiolla
 // a
 
 const työtuntienKeskiarvoFor = (taulukko) => {
-    let summa = 0
-    taulukko.forEach(value => summa += value)
-    return summa / taulukko.length
+  let summa = 0
+  taulukko.forEach((value) => (summa += value))
+  return summa / taulukko.length
 }
 
 console.log(työtuntienKeskiarvoFor(työpäiväTaulukko(7, 7, 6, 6, 7)))
 
-// b 
+// b
 
 const työtuntienKeskiarvoReduce = (taulukko) => {
-    return taulukko.reduce((acc, current) => acc + current, 0) / taulukko.length
+  return taulukko.reduce((acc, current) => acc + current, 0) / taulukko.length
 }
 
 console.log(työtuntienKeskiarvoReduce(työpäiväTaulukko(7, 7, 6, 6, 7)))
@@ -50,13 +50,13 @@ b) reduce -funktiolla
 // a
 
 const minmaxTyötunnitFor = (taulukko) => {
-    let min = taulukko[0]
-    let max = taulukko[0]
-    taulukko.forEach((value) => {
-        if (value < min) min = value
-        else if (value > max) max = value
-    })
-    return `Minimi: ${min}, Maksimi: ${max}`
+  let min = taulukko[0]
+  let max = taulukko[0]
+  taulukko.forEach((value) => {
+    if (value < min) min = value
+    else if (value > max) max = value
+  })
+  return `Minimi: ${min}, Maksimi: ${max}`
 }
 
 console.log(minmaxTyötunnitFor(työpäiväTaulukko(7, 7, 6, 6, 7)))
@@ -64,9 +64,9 @@ console.log(minmaxTyötunnitFor(työpäiväTaulukko(7, 7, 6, 6, 7)))
 //b
 
 const minmaxTyötunnitReduce = (taulukko) => {
-    let min = taulukko.reduce((acc, current) => current < acc ? current : acc)
-    let max = taulukko.reduce((acc, current) => current > acc ? current : acc)
-    return `Minimi: ${min}, Maksimi: ${max}`
+  let min = taulukko.reduce((acc, current) => (current < acc ? current : acc))
+  let max = taulukko.reduce((acc, current) => (current > acc ? current : acc))
+  return `Minimi: ${min}, Maksimi: ${max}`
 }
 console.log(minmaxTyötunnitReduce(työpäiväTaulukko(7, 9, 6, 8, 5)))
 
@@ -81,9 +81,9 @@ palkat.
 const palkkaTaulukko = [2200, 2500, 2450, 2600, 3000, 1950, 3500, 4000, 1800, 2750, 2800, 3250]
 
 const palkanKorotus = (palkat) => {
-    let taulukko = []
-    palkat.forEach((value, index) => taulukko[index] = value * 1.5)
-    return taulukko
+  let taulukko = []
+  palkat.forEach((value, index) => (taulukko[index] = value * 1.5))
+  return taulukko
 }
 
 console.log(palkanKorotus(palkkaTaulukko))
@@ -96,15 +96,27 @@ veroprosentti. Ohjelma luo uuden taulukon ja laskee nettotulot vähentäen jokai
 kuukauden bruttopalkasta verot.
 */
 
-const palkatJaVerot = [[2200, 12], [3000, 20], [1800, 8],
-[2500, 15], [1950, 9], [2750, 19],
-[2450, 15], [3500, 23], [2800, 19],
-[2600, 17], [4000, 28], [3250, 20]]
+const palkatJaVerot = [
+  [2200, 12],
+  [3000, 20],
+  [1800, 8],
+  [2500, 15],
+  [1950, 9],
+  [2750, 19],
+  [2450, 15],
+  [3500, 23],
+  [2800, 19],
+  [2600, 17],
+  [4000, 28],
+  [3250, 20],
+]
 
 const nettoTulot = (palkat) => {
-    let nettoTaulukko = []
-    palkat.forEach((element, index) => nettoTaulukko[index] = element[0] - (element[0] * element[1] / 100))
-    return nettoTaulukko
+  let nettoTaulukko = []
+  palkat.forEach(
+    (element, index) => (nettoTaulukko[index] = element[0] - (element[0] * element[1]) / 100)
+  )
+  return nettoTaulukko
 }
 
 console.log(nettoTulot(palkatJaVerot))
@@ -117,7 +129,7 @@ JavaScriptin sort-funktiota oletustoteutuksella (ei omaa compare-funktiota)
 */
 
 const järjestäLista = (lista) => {
-    return lista.sort()
+  return lista.sort()
 }
 
 console.log(järjestäLista([1, 4, 100, 2, 5, 4]))
@@ -141,8 +153,9 @@ Selitä lyhyesti miten miten JavaScriptin sort-funktio toimii ja mitä tarkoitta
 annettava compare-funktio.
 */
 
-console.log('Sort-funktio muuntaa elementtien sisällön merkkijonoiksi, jotka se järjestää kasvavaan "aakkosjärjestykseen" merkkejä vastaavien koodien mukaan(UTF-16). Eli esim. luku 100 tulee ennen lukua 2. Parametrina annettavalla compare-funktiolla voidaan muuttaa järjestyslogiikkaa. Esimerkiksi vaikkapa suuruusjärjestykseen. Silloin luku 2 tulee ennen lukua 100.')
-
+console.log(
+  'Sort-funktio muuntaa elementtien sisällön merkkijonoiksi, jotka se järjestää kasvavaan "aakkosjärjestykseen" merkkejä vastaavien koodien mukaan(UTF-16). Eli esim. luku 100 tulee ennen lukua 2. Parametrina annettavalla compare-funktiolla voidaan muuttaa järjestyslogiikkaa. Esimerkiksi vaikkapa suuruusjärjestykseen. Silloin luku 2 tulee ennen lukua 100.'
+)
 
 // 2.9
 
@@ -151,13 +164,12 @@ Sinulla on [{“ma”:44}, {“pe”:100}, {“ke”:21}, {“ti”: 66},{”la�
 objektit on järjestetty arvojen(values) mukaiseen järjestykseen.
 */
 
-let lista = [{ "ma": 44 }, { "pe": 100 }, { "ke": 21 }, { "ti": 66 }, { "la": 22 }]
-
+let lista = [{ ma: 44 }, { pe: 100 }, { ke: 21 }, { ti: 66 }, { la: 22 }]
 
 const järjestäArvonMukaan = (a, b) => {
-    a = Object.values(a)
-    b = Object.values(b)
-    return a - b
+  a = Object.values(a)
+  b = Object.values(b)
+  return a - b
 }
 
 console.log(lista.sort(järjestäArvonMukaan))
@@ -171,11 +183,11 @@ ma&lt;ti&lt;ke&lt;to&lt;pe&lt;la&lt;su.
 */
 
 const päivät = ["ma", "ti", "ke", "to", "pe", "la", "su"]
-lista = [{ "ma": 44 }, { "pe": 100 }, { "ke": 21 }, { "ti": 66 }, { "la": 22 }]
+lista = [{ ma: 44 }, { pe: 100 }, { ke: 21 }, { ti: 66 }, { la: 22 }]
 
 const järjestäPäivänMukaan = (a, b) => {
-    if (päivät.indexOf(String(Object.keys(a))) > päivät.indexOf(String(Object.keys(b)))) return 1
-    else return -1
+  if (päivät.indexOf(String(Object.keys(a))) > päivät.indexOf(String(Object.keys(b)))) return 1
+  else return -1
 }
 
 console.log(lista.sort(järjestäPäivänMukaan))
@@ -187,20 +199,30 @@ Sinulla on [{“ma”:44}, {“pe”:100}, {“ke”:21}, {“ti”: 66},{”la�
 mukana objektit, joissa on parillinen arvo.
 */
 
-lista = [{ "ma": 44 }, { "pe": 100 }, { "ke": 21 }, { "ti": 66 }, { "la": 22 }]
+lista = [{ ma: 44 }, { pe: 100 }, { ke: 21 }, { ti: 66 }, { la: 22 }]
 
 const parillisetArvot = (taulukko) => {
-    let uusiTaulukko = []
-    for (key in taulukko) {
-        let obj = taulukko[key]
-        if (Object.values(obj) % 2 === 0) {
-            uusiTaulukko.push(obj)
-        }
+  let uusiTaulukko = []
+  for (key in taulukko) {
+    let obj = taulukko[key]
+    if (Object.values(obj) % 2 === 0) {
+      uusiTaulukko.push(obj)
     }
-    return uusiTaulukko
+  }
+  return uusiTaulukko
 }
 
 console.log(parillisetArvot(lista))
+
+// FILTER
+
+lista = [{ ma: 44 }, { pe: 100 }, { ke: 21 }, { ti: 66 }, { la: 22 }]
+
+const parillisetArvotFilter = (taulukko) => {
+  return taulukko.filter((item) => Object.values(item)[0] % 2 === 0)
+}
+
+console.log(parillisetArvotFilter(lista))
 
 // 2.12
 
@@ -209,18 +231,18 @@ Sinulla on [{“ma”:44}, {“pe”:100}, {“ke”:21}, {“ti”: 66},{”la�
 mukana objektit, joiden avaimen toinen kirjain on e.
 */
 
-lista = [{ "ma": 44 }, { "pe": 100 }, { "ke": 21 }, { "ti": 66 }, { "la": 22 }]
+lista = [{ ma: 44 }, { pe: 100 }, { ke: 21 }, { ti: 66 }, { la: 22 }]
 
 const toinenKirjainE = (taulukko) => {
-    let uusiTaulukko = []
-    for (key in taulukko) {
-        let obj = taulukko[key]
-        let toinenKirjain = Object.keys(obj)[0][1]
-        if (toinenKirjain === "e") {
-            uusiTaulukko.push(obj)
-        }
+  let uusiTaulukko = []
+  for (key in taulukko) {
+    let obj = taulukko[key]
+    let toinenKirjain = Object.keys(obj)[0][1]
+    if (toinenKirjain === "e") {
+      uusiTaulukko.push(obj)
     }
-    return uusiTaulukko
+  }
+  return uusiTaulukko
 }
 
 console.log(toinenKirjainE(lista))
@@ -233,14 +255,14 @@ listaksi niin, että [{“ma”:44},{“pe”:100},...]. Ohje: käytä esim. Obj
 funktioita.
 */
 
-const muunnettavaObjekti = { "ma": 44, "pe": 100, "ke": 21, "ti": 66, "la": 22 }
+const muunnettavaObjekti = { ma: 44, pe: 100, ke: 21, ti: 66, la: 22 }
 
 const muunnaTaulukoksi = (objekti) => {
-    let taulukko = []
-    for (key in objekti) {
-        taulukko.push({ [key]: objekti[key] })
-    }
-    return taulukko
+  let taulukko = []
+  for (key in objekti) {
+    taulukko.push({ [key]: objekti[key] })
+  }
+  return taulukko
 }
 
 console.log(muunnaTaulukoksi(muunnettavaObjekti))
