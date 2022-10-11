@@ -1,0 +1,69 @@
+/*
+Header styling
+*/
+
+.nav-bar {
+    display: flex;
+    top: 0;
+    background-color: #586984;
+    width: 100%;
+    height: 2.5rem;
+}
+
+.nav-list {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.right {
+    justify-content: right;
+}
+
+.nav-list li {
+    padding-top: 0.5rem;
+    padding-inline: 1rem;
+    font-size: 1.5rem;
+}
+
+a {
+    text-decoration: none;
+}
+
+/*
+Footer styling
+*/
+
+
+.footer {
+ position: fixed;
+    bottom: 0;
+    background-color: #586984;
+    width: 100%;
+    height: 1rem;
+    padding-left: 1rem;
+}
+
+.main-content {
+    position: fixed;
+    background-color: aquamarine;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.tentti {
+    margin: 2rem;
+}
+
+.link {
+    padding-inline: 1rem;
+}
+
+.tentti-lista {
+    padding-top: 1rem;
+}
+

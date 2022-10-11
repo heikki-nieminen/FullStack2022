@@ -1,0 +1,7 @@
+div.title {
+    text-align: center;
+}
+
+div.luokat {
+    display: flex;
+}

@@ -1,10 +1,13 @@
 import Oppilas from "./Oppilas"
+import "./Luokka.css"
 
 const Luokka = (props) => {
     return (
         <div>
-            <h2>Luokan nimi: {props.data.nimi}</h2>
-            <p>Oppilaat: {props.data.oppilaat.map(oppilas => <Oppilas data={oppilas} />)}</p>
+            <div className="luokka">
+            <h3>{props.data.nimi}</h3>
+            Oppilaat: {props.data.oppilaat.map(oppilas => <Oppilas data={oppilas} />)}
+            </div>
         </div>
     )
 }

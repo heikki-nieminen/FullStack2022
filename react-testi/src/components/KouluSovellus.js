@@ -1,5 +1,6 @@
 import Koulu from "./Koulu"
 import Luokka from "./Luokka"
+import "./KouluSovellus.css"
 
 const KouluSovellus = () => {
   let oppilas1 = { nimi: "Olli Oppilas" }
@@ -28,8 +29,8 @@ const KouluSovellus = () => {
 
   return (
     <div>
-      {Koulu(koulu)}
-      {koulu.luokat.map(luokka => <Luokka data={luokka} />)}
+      <div className="title">{Koulu(koulu)}</div>
+      <div className="luokat">{koulu.luokat.map(luokka => <Luokka data={luokka} />)}</div>
     </div>
   )
 }
