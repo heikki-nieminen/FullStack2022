@@ -1,9 +1,9 @@
 const TulostaVastaus = (props) => {
 
-    return(
-        <div>
+    return (
+        <div className="vastaus">
             <input type="checkbox"/>
-                {props.vastaus}
+            {props.vastaus}
         </div>
     )
 }
