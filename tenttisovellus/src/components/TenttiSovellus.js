@@ -22,7 +22,7 @@ const TenttiSovellus = () => {
         <div className="main-content">
             <div className="tentti-lista">
                 {tentit.map(tentti => {
-                    return (<a className="link" href={tentti.nimi}>{tentti.nimi}</a>)
+                    return (<a className="link" href={tentti.nimi.replace(' ', '')}>{tentti.nimi}</a>)
                 })}
             </div>
             <div className="tentti">
