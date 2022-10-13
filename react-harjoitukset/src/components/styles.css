@@ -1,0 +1,50 @@
+div.laskin {
+    margin-left: 3rem;
+    margin-top: 3rem;
+}
+
+.input-display {
+    width: 12rem;
+    height: 3rem;
+    font-size: 3rem;
+}
+
+.button-layout {
+    gap: 2px;
+    display: grid;
+    grid-template-rows: repeat(5, 3rem);
+    grid-template-columns: repeat(4, 3rem);
+}
+
+.buttons {
+    width: 3rem;
+    height: 3rem;
+    margin: 0;
+    padding: 0;
+}
+
+.button-7 {
+    height: calc(6rem + 2px);
+}
+
+.button-15 {
+    height: calc(6rem + 2px);
+}
+
+.button-16 {
+    width: calc(6rem + 2px);
+}
+
+.button-17 {
+    width: 0;
+    height: 0;
+}
+.button-11 {
+    width: 0;
+    height: 0;
+}
+
+.button-19 {
+    width: 0;
+    height: 0;
+}
