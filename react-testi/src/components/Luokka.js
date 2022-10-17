@@ -7,7 +7,7 @@ const Luokka = (props) => {
             <div className="luokka">
                 <h3>{props.data.nimi}</h3>
                 Oppilaat: {props.data.oppilaat.map((oppilas, index) =>
-                <Oppilas oppilaanNimiMuuttui={props.oppilaanNimiMuuttui} key={index} oppilaanIndex={index}
+                <Oppilas dispatch={props.dispatch} key={index} oppilaanIndex={index}
                          luokanIndex={props.luokanIndex} data={oppilas}/>)}
             </div>
         </div>

@@ -1,8 +1,13 @@
 const Oppilas = (props) => {
     return (
-        <div>{props.data.nimi}
+        <div><p>{props.data.nimi}</p>
             <input type="text" onChange={(event) => {
-                props.oppilaanNimiMuuttui(event.target.value, props.oppilaanIndex, props.luokanIndex)
+                props.dispatch({
+                    type: 'OPPILAAN_NIMI_MUUTTUI',
+                    nimi: event.target.value,
+                    oppilasIndex: props.oppilaanIndex,
+                    luokkaIndex: props.luokanIndex
+                })
             }}
                    value={props.data.nimi}
             />
