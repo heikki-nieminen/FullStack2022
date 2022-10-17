@@ -58,6 +58,11 @@ div.main-content {
 
 .tentti {
     margin: 2rem;
+    width: calc(100% - 4rem);
+}
+
+.tentti-edit {
+    margin-top: 2rem;
 }
 
 .link {
@@ -78,4 +83,20 @@ h3.tentti-title {
 
 div.vastaus {
     padding-top: 0.4rem;
+}
+
+div.kysymys-rivi {
+    display: flex;
+    width: 100%;
+}
+
+div.kysymys-rivi input {
+    position: relative;
+    height: 1rem;
+    margin-left: 2rem;
+    align-self: center;
+}
+
+.text-input {
+    margin-left: 2rem;
 }
