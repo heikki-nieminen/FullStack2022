@@ -74,7 +74,11 @@ div.main-content {
 }
 
 div.kysymys {
+    margin-top: 1rem;
     padding-bottom: 1rem;
+    border: 1px solid black;
+    border-radius: 10px;
+
 }
 
 h3.tentti-title {

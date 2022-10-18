@@ -6,15 +6,22 @@ const TulostaTentti = (props) => {
         <div className="tentti">
             <h3 className="tentti-title">{props.tentti.nimi}</h3>
             <input type="text" className="" onChange={(event) => {
-                props.muutaTentinNimi(event.target.value)
+                props.dispatch({type: "MUUTA_TENTIN_NIMI", payload: {nimi: event.target.value}})
             }}
                    value={props.tentti.nimi}
             />
 
             {props.tentti.kysymykset.map((kysymys, index) => <TulostaKysymys kysymys={kysymys} key={index} index={index}
-                                                                             muutaKysymys={props.muutaKysymys}
-                                                                             muutaVastaus={props.muutaVastaus}/>)}
+                                                                             dispatch={props.dispatch}/>)}
 
+            <button onClick={(event) => {
+                let kysymys = window.prompt("Anna uusi kysymys:", "")
+                props.dispatch({
+                    type: "LISAA_KYSYMYS",
+                    payload: {kysymys: kysymys}
+                })
+            }}>Lisää kysymys
+            </button>
         </div>
     )
 }
