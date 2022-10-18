@@ -49,7 +49,7 @@ const reducer = (state, action) => {
             return tenttiKopio
         }
         default : {
-
+            throw new Error("VIRHE")
         }
     }
 }
