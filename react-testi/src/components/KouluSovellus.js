@@ -39,7 +39,7 @@ const reducer = (state, action) => {
             return {...koulukopio, tallennus: true}
         }
         case "ALUSTA_DATA": {
-            return action.payload
+            return {...action.payload, tietoAlustettu: true}
         }
         case "PÄIVITÄ_TALLENNUSTILA" : {
             return {...state, tallennus: action.payload}
@@ -96,7 +96,9 @@ const KouluSovellus = () => {
     return (
         <div>
             <div className="title">
-                {<Koulu koulu={koulu2} dispatch={dispatch}/>}
+                {koulu2.tietoAlustettu &&
+                    <Koulu koulu={koulu2} dispatch={dispatch}/>
+                }
             </div>
         </div>
     )
