@@ -92,6 +92,7 @@ div.vastaus {
 div.kysymys-rivi {
     display: flex;
     width: 100%;
+    margin-bottom: 1rem;
 }
 
 div.kysymys-rivi input {
@@ -103,4 +104,8 @@ div.kysymys-rivi input {
 
 .text-input {
     margin-left: 2rem;
+}
+
+.hover-link {
+    cursor: crosshair;
 }

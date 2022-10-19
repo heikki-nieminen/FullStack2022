@@ -1,6 +1,6 @@
 import './styles.css'
 import TulostaTentti from "./TulostaTentti"
-import {useReducer} from "react"
+import {useReducer, useState} from "react"
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -8,44 +8,54 @@ const reducer = (state, action) => {
             return {...state, nimi: action.payload.nimi}
         }
         case "MUUTA_KYSYMYS" : {
-            let tenttiKopio = {...state}
+            let tenttiKopio = JSON.parse(JSON.stringify({...state}))
             tenttiKopio.kysymykset[action.payload.kysymysIndex].kysymys = action.payload.kysymys
+            console.log("Muutettiin kysymys: ", tenttiKopio)
             return tenttiKopio
         }
         case "MUUTA_VASTAUS" : {
-            let tenttiKopio = {...state}
+            let tenttiKopio = JSON.parse(JSON.stringify({...state}))
             tenttiKopio.kysymykset[action.payload.kysymysIndex].vastaukset[action.payload.vastausIndex] = action.payload.vastaus
+            console.log("Muutettiin vastaus: ", tenttiKopio)
             return tenttiKopio
         }
         case "VAIHDA_TENTTI" : {
-            let tenttiKopio = {...state}
-            let index = action.payload.tentit.findIndex(object => {return object.nimi === tenttiKopio.nimi})
-            if (index < action.payload.tentit.length - 1) {
-                return action.payload.tentit[index + 1]
+            let tenttiKopio = JSON.parse(JSON.stringify({...state}))
+            if (action.payload.hasOwnProperty('index')) {
+                return action.payload.tentit[action.payload.index]
+            }
+            let index2 = action.payload.tentit.findIndex(object => {return object.nimi === tenttiKopio.nimi})
+
+            if (index2 < action.payload.tentit.length - 1) {
+                return action.payload.tentit[index2 + 1]
             } else {
                 return action.payload.tentit[0]
             }
         }
         // React.StrictMode aiheuttaa toisen kutsun
         case "LISAA_VAIHTOEHTO" : {
-            let tenttiKopio = {...state}
+            let tenttiKopio = JSON.parse(JSON.stringify({...state}))
             //  console.log(tenttiKopio.kysymykset[action.payload.kysymysIndex].vastaukset.length)
             tenttiKopio.kysymykset[action.payload.kysymysIndex].vastaukset.push(action.payload.vastaus)
+            console.log("Lisättiin vaihtoehto: ", action.payload.vastaus)
             return tenttiKopio
         }
         case "POISTA_VAIHTOEHTO" : {
-            let tenttiKopio = {...state}
-            delete tenttiKopio.kysymykset[action.payload.kysymysIndex].vastaukset[action.payload.vastausIndex]
+            let tenttiKopio = JSON.parse(JSON.stringify({...state}))
+            let splice = tenttiKopio.kysymykset[action.payload.kysymysIndex].vastaukset.splice(action.payload.vastausIndex, 1)
+            console.log("Poistettiin vaihtoehto: ", splice)
             return tenttiKopio
         }
         case "LISAA_KYSYMYS" : {
-            let tenttiKopio = {...state}
+            let tenttiKopio = JSON.parse(JSON.stringify({...state}))
             tenttiKopio.kysymykset.push({kysymys: action.payload.kysymys, vastaukset: []})
+            console.log("Lisättiin kysymys: ", action.payload.kysymys)
             return tenttiKopio
         }
         case "POISTA_KYSYMYS" : {
-            let tenttiKopio = {...state}
-            delete tenttiKopio.kysymykset[action.payload.kysymysIndex]
+            let tenttiKopio = JSON.parse(JSON.stringify({...state}))
+            let splice = tenttiKopio.kysymykset.splice(action.payload.kysymysIndex, 1)
+            console.log("Poistettiin kysymys: ", splice)
             return tenttiKopio
         }
         default : {
@@ -74,6 +84,7 @@ const TenttiSovellus = () => {
 
     //const [nykyinenTentti, setNykyinenTentti] = useState(1)
     const [tentti, dispatch] = useReducer(reducer, tentit[0])
+    const [opettaja, setOpettaja] = useState(false)
 
     /*const muutaTentinNimi = (nimi) => {
         setTentti({...tentti, nimi: nimi})
@@ -109,7 +120,12 @@ const TenttiSovellus = () => {
         <div className="main-content">
             <div className="tentti-lista">
                 {tentit.map((tentti, index) => {
-                    return (<a key={index} className="link" href={tentti.nimi.replace(' ', '')}>{tentti.nimi}</a>)
+                    return (<a key={index} className="link" onMouseOver={(event) => {
+
+                    }}
+                               onClick={(event) => {
+                                   dispatch({type: "VAIHDA_TENTTI", payload: {tentit: tentit, index: index}})
+                               }}>{tentti.nimi}</a>)
                 })}
             </div>
             <div className="tentti">
@@ -118,7 +134,13 @@ const TenttiSovellus = () => {
                 }}>Vaihda tenttiä
                 </button>
 
-                <TulostaTentti tentti={tentti} dispatch={dispatch}/>
+                <button onClick={(event) => {
+                    setOpettaja(!opettaja)
+                }}>
+                    {opettaja ? "Vaihda oppilastilaan" : "Vaihda opettajatilaan"}
+                </button>
+
+                <TulostaTentti tentti={tentti} dispatch={dispatch} onkoOpettaja={opettaja}/>
             </div>
         </div>
     )
