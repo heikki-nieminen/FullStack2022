@@ -20,6 +20,7 @@ const TulostaVastaus = (props) => {
                     <button onClick={(event) => {
                         props.dispatch({
                             type: "POISTA_VAIHTOEHTO", payload: {
+                                tenttiIndex: props.tenttiIndex,
                                 kysymysIndex: props.kysymysIndex,
                                 vastausIndex: props.vastausIndex
                             }
