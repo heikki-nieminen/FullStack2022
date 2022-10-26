@@ -1,9 +1,10 @@
-import Laskin from "./Laskin"
+import ChuckNorris from "./ChuckNorris"
 
 const App = () => {
-    return(
+    return (
         <div>
-            <Laskin />
+            <ChuckNorris/>
+            {/*<Laskin/>*/}
         </div>
     )
 }
