@@ -1,10 +1,11 @@
-import ChuckNorris from "./ChuckNorris"
+import Client from "./Client"
 
 const App = () => {
     return (
         <div>
-            <ChuckNorris/>
+            {/*<ChuckNorris/>*/}
             {/*<Laskin/>*/}
+            <Client/>
         </div>
     )
 }
