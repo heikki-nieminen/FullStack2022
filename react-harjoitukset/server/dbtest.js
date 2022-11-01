@@ -113,4 +113,4 @@ const getValidExams = async () => {
     }
 }
 
-getValidExams()
+//getValidExams()
