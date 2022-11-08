@@ -179,14 +179,16 @@ app.route('/login')
     .post(async (req, res) => {
         const username = req.body.username
         const plainPassword = req.body.password
+        console.log("USERNAME: ", username)
+        console.log("PASSWORD: ", plainPassword)
         try {
             const pass = await pool.query('SELECT password FROM public.user WHERE username=$1', [username])
             const hash = pass.rows[0].password
             const result = await bcrypt.compare(plainPassword, hash)
             if (result) {
-                res.status(200).send("Kirjautuminen onnistui")
+                res.status(200).send(true)
             } else {
-                res.send("Salasana väärin")
+                res.send(false)
             }
 
         } catch (err) {
@@ -208,10 +210,10 @@ app.route('/register')
             const password = await hashPassword(plainPassword)
             const values = [username, password, email]
             const result = await pool.query('INSERT INTO public.user (username, password, email) VALUES ($1,$2, $3)', values)
-            res.status(200).send("Käyttäjä luotu")
+            res.status(200).send(true)
         } catch (err) {
             console.log(err)
-            res.send("Virhe luotaessa käyttäjää")
+            res.send(false)
         }
     })
 
