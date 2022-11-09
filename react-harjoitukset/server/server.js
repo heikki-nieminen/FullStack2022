@@ -37,14 +37,42 @@ app.route('/')
 
     })
 
+// EXAMS ROUTE
+app.route('/exams')
+    .post(async (req, res) => {
+        console.log("KUTSU")
+        try {
+            console.log(req.body.role)
+            if (req.body.role === "admin") {
+                const result = await pool.query('SELECT name, id FROM exam')
+                res.send(result.rows)
+            }
+        } catch (err) {
+            console.log(err)
+            res.send("Ei tenttejä")
+        }
+    })
+
 // EXAM ROUTE (GET, POST, PUT, DELETE)
 app.route('/exam')
     .get(async (req, res) => {
+        let exam = {name: "", questions: []}
         const values = [req.query.id]
         try {
             const result = await pool.query('SELECT * FROM exam WHERE id=$1', values)
             if (result.rowCount) {
-                res.send(result.rows[0])
+                exam.name = result.rows[0].name
+                let questions = await pool.query('SELECT * FROM question WHERE exam_id=$1', [result.rows[0].id])
+                console.log("WAITED QUESTIONS ", questions.rows)
+                exam.questions = questions.rows
+                await Promise.all(questions.rows.map(async (item, index) => {
+                    console.log("VASTAUS")
+                    const answers = await pool.query('SELECT * FROM answer WHERE question_id=$1', [item.id])
+                    exam.questions[index].answers = answers.rows
+                    console.log("VASTAUKSEN JÄLKEEN")
+                }))
+                console.log(exam.questions[0].answers[0])
+                res.send(exam)
             } else {
                 res.send("Kyseistä tenttiä ei löydy")
             }
@@ -182,11 +210,11 @@ app.route('/login')
         console.log("USERNAME: ", username)
         console.log("PASSWORD: ", plainPassword)
         try {
-            const pass = await pool.query('SELECT password FROM public.user WHERE username=$1', [username])
+            const pass = await pool.query('SELECT password, role FROM public.user WHERE username=$1', [username])
             const hash = pass.rows[0].password
             const result = await bcrypt.compare(plainPassword, hash)
             if (result) {
-                res.status(200).send(true)
+                res.status(200).send([true, pass.rows[0].role])
             } else {
                 res.send(false)
             }
@@ -209,8 +237,9 @@ app.route('/register')
         try {
             const password = await hashPassword(plainPassword)
             const values = [username, password, email]
-            const result = await pool.query('INSERT INTO public.user (username, password, email) VALUES ($1,$2, $3)', values)
-            res.status(200).send(true)
+            const result = await pool.query("INSERT INTO public.user (username, password, email, role) " +
+                "VALUES ($1,$2,$3,'user')", values)
+            res.status(200).send(result)
         } catch (err) {
             console.log(err)
             res.send(false)

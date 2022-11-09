@@ -109,3 +109,11 @@ div.kysymys-rivi input {
 .hover-link {
     cursor: crosshair;
 }
+
+.tentti-napit {
+    margin-top: 1rem;
+}
+
+.vaihda-tentti {
+    margin-right: 1rem;
+}

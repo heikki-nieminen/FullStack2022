@@ -13,6 +13,10 @@ const TulostaVastaus = (props) => {
                                     vastaus: event.target.value
                                 }
                         })
+                        props.dispatch({
+                            type: "MUUTOKSIA",
+                            payload: true
+                        })
                     }}
                            defaultValue={props.vastaus}
                     />
@@ -24,6 +28,10 @@ const TulostaVastaus = (props) => {
                                 kysymysIndex: props.kysymysIndex,
                                 vastausIndex: props.vastausIndex
                             }
+                        })
+                        props.dispatch({
+                            type: "MUUTOKSIA",
+                            payload: true
                         })
                     }}>Poista vaihtoehto
                     </button>

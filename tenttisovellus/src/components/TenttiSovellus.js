@@ -1,6 +1,7 @@
 import './styles.css'
 import TulostaTentti from "./TulostaTentti"
 import {useEffect, useReducer, useState} from "react"
+import Muutokset from "./Muutokset"
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -10,7 +11,9 @@ const reducer = (state, action) => {
             return data
         }
         case "PÄIVITÄ_TALLENNUSTILA" : {
-            return {...state, tallennus: action.payload}
+            let tenttiKopio = JSON.parse(JSON.stringify({...state}))
+            tenttiKopio.tallennus = action.payload
+            return tenttiKopio
         }
         case "MUUTA_TENTIN_NIMI" : {
             let tenttiKopio = JSON.parse(JSON.stringify({...state}))
@@ -27,11 +30,11 @@ const reducer = (state, action) => {
             tenttiKopio.kysymykset[action.payload.kysymysIndex].vastaukset[action.payload.vastausIndex] = action.payload.vastaus
             return tenttiKopio
         }
-        case "VAIHDA_TENTTI" : {
-            console.log("Uusi tentti index: ", action.payload.nykyinenTentti)
-            console.log(action.payload.tentit[action.payload.nykyinenTentti])
-            return {...action.payload.tentit[action.payload.nykyinenTentti]}
-        }
+        /*        case "VAIHDA_TENTTI" : {
+                    console.log("Uusi tentti index: ", action.payload.nykyinenTentti)
+                    console.log(action.payload.tentit[action.payload.nykyinenTentti])
+                    return {...action.payload.tentit[action.payload.nykyinenTentti]}
+                }*/
 
         case "LISAA_VAIHTOEHTO" : {
             let tenttiKopio = JSON.parse(JSON.stringify({...state}))
@@ -62,6 +65,50 @@ const reducer = (state, action) => {
             tenttiKopio.tallennus = true
             return tenttiKopio
         }
+
+        case "MUUTOKSIA" : {
+            let tenttiKopio = JSON.parse(JSON.stringify({...state}))
+            return {...tenttiKopio, onkoMuutoksia: action.payload}
+        }
+        /* Näytä muutettu data(vanha ja uusi), tyhjennä tallennuksen yhteydessä
+        * Muutokset muotoa kysymysIndex, (vastausIndex)
+        *
+        *
+        *
+        *
+        * */
+        /*        case "MUUTOKSIA" : {
+                    console.log("Muutoksia")
+                    let {kysymysIndex, vastausIndex} = action.payload
+                    let tenttiKopio = JSON.parse(JSON.stringify({...state}))
+                    let data, vanhaData
+                    // Jos saatiin kysymysIndex
+                    if (kysymysIndex !== null && kysymysIndex !== undefined) {
+                        if (vastausIndex !== null && vastausIndex !== undefined) {
+                            vanhaData = tenttiKopio.muutokset.vanhadata.kysymykset[kysymysIndex].vastaukset[vastausIndex]
+                            data = tenttiKopio.kysymykset[kysymysIndex].vastaukset[vastausIndex]
+                        } else {
+                            vanhaData = tenttiKopio.muutokset.vanhadata.kysymykset[kysymysIndex].kysymys
+                            data = tenttiKopio.kysymykset[kysymysIndex].kysymys
+                        }
+                    }
+                    tenttiKopio.muutokset.uusidata = {
+                        vanha: vanhaData,
+                        uusi: data
+                    }
+                    //tenttiKopio.muutokset.uusidata = {testi: "testi"}
+                    tenttiKopio.onkoMuutoksia = true
+                    console.log(tenttiKopio)
+                    return tenttiKopio
+                }
+                case "TALLENNA_VANHADATA" : {
+                    let tenttiKopio = JSON.parse(JSON.stringify({...state}))
+                    //if (tenttiKopio.muutokset.nimi)
+                    let data = action.payload.data
+
+                    console.log(tenttiKopio)
+                    return tenttiKopio
+                }*/
         default : {
             throw new Error("VIRHE")
         }
@@ -88,6 +135,7 @@ const TenttiSovellus = () => {
     const [nykyinenTentti, setNykyinenTentti] = useState(0)
     const [tentti, dispatch] = useReducer(reducer, tentitArray[nykyinenTentti])
     const [opettaja, setOpettaja] = useState(false)
+    const [onkoMuutoksia, setOnkoMuutoksia] = useState(false)
 
     useEffect(() => {
         let tenttiData = localStorage.getItem(`tenttidata-${nykyinenTentti}`)
@@ -96,6 +144,11 @@ const TenttiSovellus = () => {
             tentitArray.map((tentti, index) => {
                 tentti.tallennus = false
                 tentti.tietoAlustettu = false
+                tentti.onkoMuutoksia = false
+                tentti.ajastinID = ''
+                /*              tentti.muutokset = {vanhadata: {}, uusidata: {}}
+                                tentti.muutokset.vanhadata = JSON.parse(JSON.stringify(tentti))
+                                delete tentti.muutokset.vanhadata.muutokset*/
                 localStorage.setItem(`tenttidata-${index}`, JSON.stringify(tentitArray[index]))
                 dispatch({type: "ALUSTA_DATA", payload: tentti})
             })
@@ -106,22 +159,58 @@ const TenttiSovellus = () => {
     }, [nykyinenTentti])
 
     useEffect(() => {
-        if (tentti.tallennus === true) {
-            dispatch({type: "PÄIVITÄ_TALLENNUSTILA", payload: false})
-            localStorage.setItem(`tenttidata-${nykyinenTentti}`, JSON.stringify(tentti))
+
+    }, [])
+
+// ????????????????????????????? Laita clearTimeout toimimaan!!!!!!
+
+    useEffect(() => {
+
+    })
+
+    useEffect(() => {
+        console.log("onko muutoksia: ", tentti.onkoMuutoksia)
+        console.log("onko tallennus: ", tentti.tallennus)
+
+        if (tentti.onkoMuutoksia === true) {
+            tentti.onkoMuutoksia = false
+            if (!tentti.ajastinID) {
+                tentti.ajastinID = setTimeout(() => {
+                    setOnkoMuutoksia(true)
+                    console.log("CLEARED TIMEOUT ID: ", tentti.ajastinID)
+                    clearTimeout(tentti.ajastinID)
+                    tentti.ajastinID = ""
+                }, 4000)
+                console.log("TIMEOUT ID: ", tentti.ajastinID)
+            }
+
         }
-    }, [tentti.tallennus])
+        console.log(tentti.ajastinID)
+        if (tentti.tallennus === true) {
+            /*          tentti.muutokset = {vanhadata: {}, uusidata: {}}
+                        tentti.muutokset.vanhadata = JSON.parse(JSON.stringify(tentti))
+                        delete tentti.muutokset.vanhadata.muutokset*/
+            dispatch({type: "PÄIVITÄ_TALLENNUSTILA", payload: false})
+            tentti.tallennus = false
+            setOnkoMuutoksia(false)
+            tentti.onkoMuutoksia = false
+            console.log("CLEARED: ", tentti.ajastinID)
+
+            clearTimeout(tentti.ajastinID)
+            tentti.ajastinID = ""
+            localStorage.setItem(`tenttidata-${nykyinenTentti}`, JSON.stringify(tentti))
+
+        } else {
+            console.log("EI TALLENNETA KUN EI OLE MUUTOKSIA")
+        }
+    }, [tentti.onkoMuutoksia, tentti.tallennus])
 
     return (
         <div className="main-content">
             <div className="tentti">
-                <button onClick={(event) => {
-                    if (nykyinenTentti < tentitArray.length - 1) {
-                        setNykyinenTentti(nykyinenTentti + 1)
-                    } else {
-                        setNykyinenTentti(0)
-                    }
-                }}>Vaihda tenttiä
+                <button className="vaihda-tentti"
+                        onClick={(event) => {(nykyinenTentti < (tentitArray.length - 1)) ? setNykyinenTentti(nykyinenTentti + 1) : setNykyinenTentti(0)}}>
+                    Vaihda tenttiä
                 </button>
 
                 <button onClick={(event) => {
@@ -132,7 +221,14 @@ const TenttiSovellus = () => {
 
                 {tentti.tietoAlustettu && <TulostaTentti tentti={tentti}
                                                          tenttiIndex={nykyinenTentti}
-                                                         dispatch={dispatch} onkoOpettaja={opettaja}/>}
+                                                         dispatch={dispatch}
+                                                         onkoOpettaja={opettaja}
+                                                         onkoMuutoksia={setOnkoMuutoksia}/>}
+            </div>
+            <div className="muutokset">
+                {onkoMuutoksia &&
+                    <Muutokset/>
+                }
             </div>
         </div>
     )
