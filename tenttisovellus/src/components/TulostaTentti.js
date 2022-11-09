@@ -9,6 +9,10 @@ const TulostaTentti = (props) => {
                         type: "MUUTA_TENTIN_NIMI",
                         payload: {tenttiIndex: props.tenttiIndex, nimi: event.target.value}
                     })
+                    props.dispatch({
+                        type: "MUUTOKSIA",
+                        payload: true
+                    })
                 }}
                        value={props.tentti.nimi}
                 />
@@ -19,29 +23,36 @@ const TulostaTentti = (props) => {
                                                                              tenttiIndex={props.tenttiIndex}
                                                                              index={index}
                                                                              dispatch={props.dispatch}
-                                                                             onkoOpettaja={props.onkoOpettaja}/>)}
-            {props.onkoOpettaja ?
-                <>
-                    <button onClick={(event) => {
-                        let kysymys = window.prompt("Anna uusi kysymys:", "")
-                        props.dispatch({
-                            type: "LISAA_KYSYMYS",
-                            payload: {kysymys: kysymys, tenttiIndex: props.tenttiIndex}
-                        })
-                    }}>Lisää kysymys
-                    </button>
-                    <button className="right" onClick={(event) => {
-                        props.dispatch({
-                            type: "TALLENNA_TENTTI",
-                            payload: {index: props.tenttiIndex}
-                        })
-                    }
-                    }>Tallenna tentti
-                    </button>
-                </>
-                :
-                <button>Palauta vastaukset</button>
-            }
+                                                                             onkoOpettaja={props.onkoOpettaja}
+                                                                             onkoMuutoksia={props.onkoMuutoksia}/>)}
+            <div className="tentti-napit">
+                {props.onkoOpettaja ?
+                    <>
+                        <button onClick={(event) => {
+                            let kysymys = window.prompt("Anna uusi kysymys:", "")
+                            props.dispatch({
+                                type: "LISAA_KYSYMYS",
+                                payload: {kysymys: kysymys, tenttiIndex: props.tenttiIndex}
+                            })
+                            props.dispatch({
+                                type: "MUUTOKSIA",
+                                payload: true
+                            })
+                        }}>Lisää kysymys
+                        </button>
+                        <button className="right" onClick={(event) => {
+                            props.dispatch({
+                                type: "TALLENNA_TENTTI",
+                                payload: {index: props.tenttiIndex}
+                            })
+                        }
+                        }>Tallenna tentti
+                        </button>
+                    </>
+                    :
+                    <button>Palauta vastaukset</button>
+                }
+            </div>
 
         </div>
     )

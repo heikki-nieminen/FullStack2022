@@ -19,7 +19,7 @@ const addNewExam = async (name) => {
 //    pool.end()
 }
 
-//addNewExam("C perusteet")
+//addNewExam("Haskell perusteet")
 
 const removeExamById = async (id) => {
     const text = 'DELETE FROM exams WHERE id=$1'
@@ -34,9 +34,9 @@ const removeExamById = async (id) => {
 
 //removeExamById(2)
 
-const changeExamNameByName = async (oldName, newName) => {
-    const text = 'UPDATE exams SET name=$2 WHERE name=$1'
-    const values = [oldName, newName]
+const changeExamNameByName = async (id, newName) => {
+    const text = 'UPDATE exams SET name=$2 WHERE id=$1'
+    const values = [id, newName]
     try {
         const res = await pool.query(text, values)
         console.log(res.rowCount)

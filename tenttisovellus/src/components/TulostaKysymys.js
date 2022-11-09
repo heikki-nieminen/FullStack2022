@@ -5,12 +5,24 @@ const TulostaKysymys = (props) => {
         <div className="kysymys">
             <div className="kysymys-rivi">
                 {props.onkoOpettaja ?
-                    <input type="text" className="kysymys-title text-input" onChange={(event) => {
+                    <input type="text" className="kysymys-title text-input" /*onClick={(event) => {
                         props.dispatch({
-                            type: "MUUTA_KYSYMYS",
-                            payload: {kysymysIndex: props.index, kysymys: event.target.value}
+                            type: "TALLENNA_VANHADATA", payload: {
+                                data: event.target.value
+                            }
                         })
-                    }}
+                    }}*/
+                           onChange={(event) => {
+                               console.log(event)
+                               props.dispatch({
+                                   type: "MUUTA_KYSYMYS",
+                                   payload: {kysymysIndex: props.index, kysymys: event.target.value}
+                               })
+                               props.dispatch({
+                                   type: "MUUTOKSIA",
+                                   payload: true
+                               })
+                           }}
                            value={props.kysymys.kysymys}
                     />
                     :
@@ -24,7 +36,8 @@ const TulostaKysymys = (props) => {
                                                                                   vastausIndex={index}
                                                                                   vastaus={vastaus}
                                                                                   dispatch={props.dispatch}
-                                                                                  onkoOpettaja={props.onkoOpettaja}/>)}
+                                                                                  onkoOpettaja={props.onkoOpettaja}
+                                                                                  onkoMuutoksia={props.onkoMuutoksia}/>)}
             </div>
 
             {props.onkoOpettaja &&
@@ -35,6 +48,10 @@ const TulostaKysymys = (props) => {
                             type: "LISAA_VAIHTOEHTO",
                             payload: {tenttiIndex: props.tenttiIndex, kysymysIndex: props.index, vastaus: vastaus}
                         })
+                        props.dispatch({
+                            type: "MUUTOKSIA",
+                            payload: true
+                        })
                     }
                     }>Lisää vaihtoehto
                     </button>
@@ -43,6 +60,10 @@ const TulostaKysymys = (props) => {
                         props.dispatch({
                             type: "POISTA_KYSYMYS",
                             payload: {tenttiIndex: props.tenttiIndex, kysymysIndex: props.index}
+                        })
+                        props.dispatch({
+                            type: "MUUTOKSIA",
+                            payload: true
                         })
                     }}>Poista kysymys
                     </button>

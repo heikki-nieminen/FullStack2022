@@ -1,0 +1,25 @@
+.exam-container {
+    width: fit-content;
+    margin: 2rem;
+}
+
+.exam-title {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.question-box {
+    border-style: solid;
+    border-radius: 5px;
+    margin-top: 1.5rem;
+}
+
+.question-title {
+    font-size: 1.25rem;
+    margin: 0.2rem;
+    font-weight: bold;
+}
+
+.answer {
+    margin: 0.4rem;
+}

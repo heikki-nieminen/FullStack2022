@@ -1,12 +1,21 @@
+html {
+
+}
+
 div.laskin {
     margin-left: 3rem;
     margin-top: 3rem;
+    background-color: aquamarine;
+    width: fit-content;
 }
 
 .input-display {
     width: 12rem;
     height: 3rem;
     font-size: 3rem;
+    background-color: #61b612;
+    overflow: scroll;
+    text-align: right;
 }
 
 .button-layout {
