@@ -61,20 +61,25 @@ app.route('/exam')
         try {
             const result = await pool.query('SELECT * FROM exam WHERE id=$1', values)
             if (result.rowCount) {
+                console.log("LÖYDETTIIN TENTTI")
                 exam.name = result.rows[0].name
                 let questions = await pool.query('SELECT * FROM question WHERE exam_id=$1', [result.rows[0].id])
-                console.log("WAITED QUESTIONS ", questions.rows)
-                exam.questions = questions.rows
-                await Promise.all(questions.rows.map(async (item, index) => {
-                    console.log("VASTAUS")
-                    const answers = await pool.query('SELECT * FROM answer WHERE question_id=$1', [item.id])
-                    exam.questions[index].answers = answers.rows
-                    console.log("VASTAUKSEN JÄLKEEN")
-                }))
-                console.log(exam.questions[0].answers[0])
-                res.send(exam)
+                console.log("PÄÄSTÄÄNKÖ TÄNNE? ", questions.rowCount)
+                if (questions.rowCount) {
+                    exam.questions = questions.rows
+                    await Promise.all(questions.rows.map(async (item, index) => {
+                        console.log("VASTAUS")
+                        const answers = await pool.query('SELECT * FROM answer WHERE question_id=$1', [item.id])
+                        if (answers.rowCount) {
+                            exam.questions[index].answers = answers.rows
+                        }
+                    }))
+                    res.send(exam)
+                } else {
+                    res.send(exam)
+                }
             } else {
-                res.send("Kyseistä tenttiä ei löydy")
+                res.status(404).send("Kyseistä tenttiä ei löydy")
             }
         } catch (err) {
             console.log(err)

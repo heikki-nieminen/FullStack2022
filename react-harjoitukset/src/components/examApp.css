@@ -1,4 +1,4 @@
-.login input {
+.login-form input {
     width: 10rem;
     height: 2rem;
     margin-right: 0.25rem;
@@ -63,4 +63,24 @@
     border: 0;
     background-color: #586984;
     font-size: 1.5rem;
+}
+
+
+.login-window {
+    right: 3rem;
+    top: 4rem;
+    position: fixed;
+    border-style: solid;
+    border-radius: 5px;
+    background-color: #586984;
+}
+
+.login-window .close-window {
+    cursor: pointer;
+    float: right;
+    justify-self: right;
+    background-color: #586984;
+
+    font-size: 1.25rem;
+    font-weight: bold;
 }

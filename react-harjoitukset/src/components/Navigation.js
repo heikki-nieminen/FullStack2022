@@ -18,14 +18,10 @@ const Navigation = (props) => {
                     </li>
                     :
                     <>
-                        <form id="login-form" className="login">
-                            <input id="user" name="username" placeholder="Käyttäjätunnus" required/>
-                            <input id="pass" name="password" placeholder="Salasana" type="password" required/>
-                        </form>
                         <li>
                             <a href='/login' onClick={(e) => {
                                 e.preventDefault()
-                                props.login(document.getElementById("user").value, document.getElementById("pass").value)
+                                props.setLoginState(true)
                             }}>Kirjaudu
                             </a>
                         </li>
