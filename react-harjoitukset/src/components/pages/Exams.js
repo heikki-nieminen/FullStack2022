@@ -29,7 +29,10 @@ const Exams = (props) => {
         <div>
             <ul>{props.content.exams.map((item, index) => {
                 return (<li key={index}><Link key={index} to={`/exam?id=${item.id}`} onClick={() => {
-                    props.dispatch({type: "SET_EXAM_ID", payload: item.id})
+                    props.dispatch({
+                        type: "SET_EXAM_ID",
+                        payload: {id: item.id, initialized: !props.content.initialized}
+                    })
                 }}>{item.name}</Link></li>)
             })}</ul>
         </div>
