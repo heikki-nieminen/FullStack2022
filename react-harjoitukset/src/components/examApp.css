@@ -57,6 +57,14 @@
     justify-content: space-between;
 }
 
+.login-button {
+    cursor: pointer;
+}
+
+.register-button {
+    cursor: pointer;
+}
+
 .login-submit {
     font-family: Arial;
     cursor: pointer;
@@ -75,12 +83,20 @@
     background-color: #586984;
 }
 
-.login-window .close-window {
+.close-window {
     cursor: pointer;
     float: right;
     justify-self: right;
     background-color: #586984;
-
     font-size: 1.25rem;
     font-weight: bold;
+}
+
+.register-container {
+    position: fixed;
+    border-style: solid;
+    border-radius: 5px;
+    background-color: #586984;
+    right: 3rem;
+    top: 4rem;
 }
