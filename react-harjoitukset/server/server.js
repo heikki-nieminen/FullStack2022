@@ -3,6 +3,7 @@ const express = require('express')
 const cors = require('cors')
 const bcrypt = require('bcrypt')
 const {Pool, Client} = require('pg')
+const jwt = require('jsonwebtoken')
 
 const PORT = 8080
 
@@ -25,6 +26,20 @@ const options = {
 app.use(express.json())
 app.use(cors())
 
+const verifyToken = async (req, res, next) => {
+	try {
+		const token = await req.headers.authorization?.split(' ')[1]
+		if (!token) {
+			res.status(401).json({success: false, message: "Token was not provided"})
+		}
+		req.decoded = await jwt.verify(token, "salainenavain")
+		next()
+	} catch (err) {
+		console.log(err)
+		res.status(401)
+	}
+}
+
 const server = https.createServer(options, app).listen(PORT, function () {
 	console.log("Express server listening on port " + PORT)
 })
@@ -39,13 +54,13 @@ app.route('/')
 
 // EXAMS ROUTE
 app.route('/exams')
+	.all(verifyToken)
 	.get(async (req, res) => {
 	
 	})
 	.post(async (req, res) => {
 		try {
-			console.log(req.body.role)
-			if (req.body.role === "admin") {
+			if (req.decoded.role === 'admin') {
 				const result = await pool.query('SELECT name, id FROM exam')
 				res.status(200).send(result.rows)
 			}
@@ -57,8 +72,9 @@ app.route('/exams')
 
 // EXAM ROUTE (GET, POST, PUT, DELETE)
 app.route('/exam')
+	.all(verifyToken)
 	.get(async (req, res) => {
-		console.log("Haetaan tentti")
+		console.log("Haetaan tentt")
 		let exam = {name: "", questions: []}
 		const values = [req.query.id]
 		try {
@@ -218,19 +234,25 @@ app.route('/login')
 	.post(async (req, res) => {
 		const username = req.body.username
 		const plainPassword = req.body.password
+		let token
 		try {
 			const pass = await pool.query('SELECT password, role, id FROM public.user WHERE username=$1', [username])
 			const hash = pass.rows[0].password
 			const result = await bcrypt.compare(plainPassword, hash)
 			if (result) {
-				res.status(201).send({correct: true, role: pass.rows[0].role, id: pass.rows[0].id})
+				token = await jwt.sign({
+					id:       pass.rows[0].id,
+					username: username,
+					role:     pass.rows[0].role
+				}, "salainenavain", {expiresIn: "1h"})
+				res.status(201).json({correct: true, role: pass.rows[0].role, id: pass.rows[0].id, token: token})
 			} else {
 				res.status(400).send({correct: false})
 			}
 			
 		} catch (err) {
 			console.log(err)
-			res.status(400).send("Kirjautuminen epäonnistu")
+			res.status(400).send("Kirjautuminen epäonnistui")
 		}
 	})
 
@@ -253,13 +275,18 @@ app.route('/register')
 			res.status(201).send(true)
 		} catch (err) {
 			if (err.code === '23505') {
-				res.status(400).send("Käyttäjätunnus on jo olemassa")
+				res.status(400).send("Käyttäjätunnus varattu")
 			} else {
 				console.log(err)
 				res.send(false)
 			}
 		}
 	})
+
+// AUTHENTICATION CHECK
+app.get('/RequestAccess', verifyToken, (req, res) => {
+	res.status(200).json(req.decoded)
+})
 
 // HASH PASSWORD
 const hashPassword = async (password) => {

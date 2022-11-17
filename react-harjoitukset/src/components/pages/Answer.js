@@ -1,11 +1,12 @@
 import edit from './img/edit.png'
 import remove from './img/minus.png'
 import axios from "axios"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 
 const Answer = (props) => {
   const [editAnswer, setEditAnswer] = useState(false)
-
+  const [initializeData, setInitializeData] = useState(false)
+  
   const saveAnswer = async () => {
     let answer = document.getElementById("edit-answer").value
     let isCorrect = document.getElementById("edit-answer-correct").checked
@@ -24,7 +25,7 @@ const Answer = (props) => {
       console.log(err)
     }
   }
-
+  
   const removeAnswer = async () => {
     let request = {id: props.answer.id}
     try {
@@ -41,7 +42,11 @@ const Answer = (props) => {
       console.log(err)
     }
   }
-
+  
+  useEffect(() => {
+  
+  }, [])
+  
   return (<div className="answer">
     {!editAnswer ?
       <div>

@@ -11,8 +11,9 @@ const Login = (props) => {
 				}
 			})
 			if (res.data.correct === true) {
-				props.dispatch({type: "LOGIN"})
-				props.dispatch({type: "SET_USER", payload: {role: res.data.role, id: res.data.id}})
+				console.log(res.data)
+				props.dispatch({type: "LOGIN", payload: {id: res.data.id, role: res.data.role, token: res.data.token}})
+				//props.dispatch({type: "SET_USER", payload: {role: res.data.role, id: res.data.id}})
 				props.setLoginState(false)
 			} else {
 				console.log("TESTI")

@@ -8,6 +8,7 @@ import Register from "./Register"
 import Exam from "./pages/Exam"
 import PageNotFound from "./pages/PageNotFound"
 import Login from "./Login"
+import axios from "axios"
 
 const server = 'https://localhost:8080'
 
@@ -20,13 +21,32 @@ const reducer = (state, action) => {
 			return {...state, alert: action.payload}
 		}
 		case "LOGIN": {
-			return {...state, loggedIn: true, alert: ""}
+			let stateCopy = JSON.parse(JSON.stringify(state))
+			console.log(action.payload.token)
+			localStorage.setItem('access_token', action.payload.token)
+			axios.defaults.headers.common['Authorization'] = `Bearer ${action.payload.token}`;
+			stateCopy.user.loggedIn = true
+			stateCopy.user.id = action.payload.id
+			stateCopy.user.role = action.payload.role
+			stateCopy.user.token = action.payload.token
+			return {...stateCopy, alert: ""}
 		}
 		case "LOGOUT": {
-			return {...state, loggedIn: false, role: "", userId: 0}
+			let stateCopy = JSON.parse(JSON.stringify(state))
+			localStorage.removeItem('access_token')
+			stateCopy.user.loggedIn = false
+			stateCopy.user.id = 0
+			stateCopy.user.role = ""
+			stateCopy.user.token = ""
+			return stateCopy
 		}
 		case "SET_USER" : {
-			return {...state, role: action.payload.role, userId: action.payload.id}
+			let stateCopy = JSON.parse(JSON.stringify(state))
+			stateCopy.user.id = action.payload.id
+			stateCopy.user.role = action.payload.role
+			stateCopy.user.username = action.payload.name
+			stateCopy.user.loggedIn = true
+			return stateCopy
 		}
 		case "SET_EXAMS" : {
 			let stateCopy = JSON.parse(JSON.stringify(state))
@@ -136,20 +156,16 @@ const reducer = (state, action) => {
 }
 
 const initialState = {
-	initializeExam:     false,
-	initializeQuestion: false,
-	initializeAnswer:   false,
-	editQuestion:       false,
-	initialized:        false,
-	exams:              [],
-	getData:            false,
-	alert:              "",
-	loggedIn:           false,
-	userId:             0,
-	role:               "",
-	examId:             0,
-	exam:               {name: "", questions: []},
-	changes:            []
+	user:         {id: 0, role: "", token: "", loggedIn: false},
+	editQuestion: false,
+	initialized:  false,
+	exams:        [],
+	getData:      false,
+	alert:        "",
+	loggedIn:     false,
+	examId:       0,
+	exam:         {name: "", questions: []},
+	changes:      []
 }
 
 const ExamApp = () => {
@@ -158,24 +174,43 @@ const ExamApp = () => {
 	const [registerState, setRegisterState] = useState(false)
 	const [initializeData, setInitializeData] = useState(false)
 	
+	// Initialize data and validate token
 	useEffect(() => {
 		if (!initializeData) {
-			console.log("Initializing routes")
+			const getUserData = async () => {
+				const token = localStorage.getItem('access_token')
+				if (token) {
+					axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+					let userData = await axios({
+						method: 'get',
+						url:    server + '/RequestAccess'
+					})
+					console.log(userData.data)
+					dispatch({
+						type:    "SET_USER",
+						payload: {id: userData.data.id, role: userData.data.role, name: userData.data.username}
+					})
+				}
+			}
+			getUserData()
 			setInitializeData(true)
 		}
 	}, [])
 	
 	return (
 		<div>
-			<Navigation content={content} dispatch={dispatch} setLoginState={setLoginState}
-			            setRegisterState={setRegisterState} server={server}/>
 			{initializeData &&
-				<Routes>
-					<Route path="/" element={<Home/>}/>
-					<Route path="*" element={<PageNotFound/>}/>
-					<Route path="/exams" element={<Exams server={server} content={content} dispatch={dispatch}/>}/>
-					<Route path="/exam" element={<Exam server={server} dispatch={dispatch} content={content}/>}/>
-				</Routes>
+				<>
+					<Navigation content={content} dispatch={dispatch} setLoginState={setLoginState}
+					            setRegisterState={setRegisterState} server={server}/>
+					
+					<Routes>
+						<Route path="/" element={<Home/>}/>
+						<Route path="*" element={<PageNotFound/>}/>
+						<Route path="/exams" element={<Exams server={server} content={content} dispatch={dispatch}/>}/>
+						<Route path="/exam" element={<Exam server={server} dispatch={dispatch} content={content}/>}/>
+					</Routes>
+				</>
 			}
 			{loginState && <Login setLoginState={setLoginState} dispatch={dispatch} server={server}/>}
 			{registerState && <Register setRegisterState={setRegisterState} dispatch={dispatch} server={server}/>}
