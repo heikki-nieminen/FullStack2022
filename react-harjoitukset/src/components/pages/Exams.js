@@ -1,6 +1,7 @@
 import {Link} from "react-router-dom"
 import {useEffect, useState} from "react"
 import axios from "axios"
+import AccessDenied from "./AccessDenied"
 
 const Exams = (props) => {
 	const [addExam, setAddExam] = useState(false)
@@ -23,7 +24,7 @@ const Exams = (props) => {
 	
 	useEffect(() => {
 		getExams()
-	}, [])
+	}, [props.content.user.loggedIn])
 	
 	const deleteExam = async (id) => {
 		try {
@@ -39,26 +40,36 @@ const Exams = (props) => {
 	
 	return (
 		<div>
-			<ul>{props.content.exams.map((item, index) => {
-				return (<li key={index}><Link key={index} to={`/exam?id=${item.id}`} onClick={() => {
-					props.dispatch({type: "INITIALIZE_DATA", payload: false})
-					props.dispatch({
-						type:    "SET_EXAM_ID",
-						payload: {id: item.id, initialized: !props.content.initialized}
-					})
-				}}>{item.name}</Link>
-					<button onClick={async () => {
-						await deleteExam(item.id)
-						props.dispatch({type: "REMOVE_EXAM", payload: index})
-					}}>Poista tentti
-					</button>
-				</li>)
-			})}</ul>
-			{!addExam ? <button onClick={() => {
-					setAddExam(true)
-				}}>Uusi tentti</button>
+			{props.content.user.loggedIn ?
+				<>
+					<ul>{props.content.exams.map((item, index) => {
+						return (<li key={index}><Link key={index} to={`/exam?id=${item.id}`} onClick={() => {
+							props.dispatch({type: "INITIALIZE_DATA", payload: false})
+							props.dispatch({
+								type:    "SET_EXAM_ID",
+								payload: {id: item.id, initialized: !props.content.initialized}
+							})
+						}}>{item.name}</Link>
+							<button onClick={async () => {
+								await deleteExam(item.id)
+								props.dispatch({type: "REMOVE_EXAM", payload: index})
+							}}>Poista tentti
+							</button>
+						</li>)
+					})}</ul>
+					{props.content.user.role === 'admin' &&
+						<>
+							{!addExam ? <button onClick={() => {
+									setAddExam(true)
+								}}>Uusi tentti</button>
+								:
+								<AddExam setAddExam={setAddExam} server={props.server} dispatch={props.dispatch}/>
+							}
+						</>
+					}
+				</>
 				:
-				<AddExam setAddExam={setAddExam} server={props.server} dispatch={props.dispatch}/>
+				<AccessDenied/>
 			}
 		</div>
 	)

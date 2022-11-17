@@ -10,9 +10,9 @@ const Exam = (props) => {
 	let [searchParams] = useSearchParams()
 	const [addQuestion, setAddQuestion] = useState(false)
 	const [isExamData, setIsExamData] = useState(false)
+	const [initializeData, setInitializeData] = useState(false)
 	
 	useEffect(() => {
-		props.dispatch({type: "INITIALIZE_DATA", payload: false})
 		props.dispatch({
 			type:    "SET_EXAM_ID",
 			payload: {id: searchParams.get('id')}
@@ -25,14 +25,17 @@ const Exam = (props) => {
 					url:    props.server + '/exam?id=' + examId
 				})
 				props.dispatch({type: "SET_EXAM", payload: res.data})
-				props.dispatch({type: "INITIALIZE_DATA", payload: true})
+				setInitializeData(true)
+				console.log("DATA SET TO TRUE")
 				setIsExamData(true)
 			} catch (err) {
 				console.log("Virhe ", err)
 			}
 		}
-		getExam(searchParams.get('id'))
-		
+		if (!initializeData) {
+			console.log("Calling getExam()")
+			getExam(searchParams.get('id'))
+		}
 	}, [])
 	
 	/* const saveChanges = async () => {
@@ -109,7 +112,7 @@ const Exam = (props) => {
 	 }*/
 	
 	return (<div className="exam-container">
-		{props.content.initialized ?
+		{initializeData ?
 			<>
 				{isExamData ?
 					<>
@@ -125,10 +128,9 @@ const Exam = (props) => {
 							<div>
 								{props.content.exam.questions.map((item, index) => {
 									return (<Question key={index} server={props.server} question={item} id={index}
-									                  edit={props.content.exam.edit}
+									                  edit={props.content.exam.edit} initialized={props.content.initialized}
 									                  dispatch={props.dispatch}/>)
-								})
-								}
+								})}
 							</div>
 							:
 							<>

@@ -7,10 +7,10 @@ const Navigation = (props) => {
 		<div className="nav-bar">
 			<ul className="nav">
 				<li><Link to='/'>Etusivu</Link></li>
-				{props.content.loggedIn && <li><Link to='/exams'>Tentit</Link></li>}
+				{props.content.user.loggedIn && <li><Link to='/exams'>Tentit</Link></li>}
 			</ul>
 			<ul className="nav right">
-				{props.content.loggedIn ?
+				{props.content.user.loggedIn ?
 					<li>
 						<Link to='/' onClick={() => {props.dispatch({type: "LOGOUT"})}}>Kirjaudu ulos</Link>
 					</li>
