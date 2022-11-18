@@ -33,9 +33,12 @@ const verifyToken = async (req, res, next) => {
 			res.status(401).json({success: false, message: "Token was not provided"})
 		}
 		req.decoded = await jwt.verify(token, "salainenavain")
+		console.log(req.decoded)
 		next()
 	} catch (err) {
-		console.log(err)
+		if (err.message === 'jwt expired') {
+			res.status(401).json({success: false, message: "Token expired"})
+		}
 		res.status(401)
 	}
 }
@@ -237,22 +240,24 @@ app.route('/login')
 		let token
 		try {
 			const pass = await pool.query('SELECT password, role, id FROM public.user WHERE username=$1', [username])
-			const hash = pass.rows[0].password
-			const result = await bcrypt.compare(plainPassword, hash)
-			if (result) {
-				token = await jwt.sign({
-					id:       pass.rows[0].id,
-					username: username,
-					role:     pass.rows[0].role
-				}, "salainenavain", {expiresIn: "1h"})
-				res.status(201).json({correct: true, role: pass.rows[0].role, id: pass.rows[0].id, token: token})
+			if (pass.rowCount > 0) {
+				const hash = pass.rows[0].password
+				const result = await bcrypt.compare(plainPassword, hash)
+				if (result) {
+					token = await jwt.sign({
+						id:       pass.rows[0].id,
+						username: username,
+						role:     pass.rows[0].role
+					}, "salainenavain", {expiresIn: "1h"})
+					res.status(201).json({correct: true, role: pass.rows[0].role, id: pass.rows[0].id, token: token})
+				} else {
+					res.status(401).json({correct: false, message: "Wrong username or password"})
+				}
 			} else {
-				res.status(400).send({correct: false})
+				res.status(401).json({correct: false, message: "Wrong username or password"})
 			}
-			
 		} catch (err) {
-			console.log(err)
-			res.status(400).send("Kirjautuminen epäonnistui")
+			res.status(400).json({correct: false, message: "Palvelinvirhe"})
 		}
 	})
 
@@ -281,6 +286,29 @@ app.route('/register')
 				res.send(false)
 			}
 		}
+	})
+
+// USERS ROUTE
+app.route('/users')
+	.all(verifyToken)
+	.get(async (req, res) => {
+		try {
+			const result = await pool.query("SELECT * FROM public.user")
+			if (result.rowCount > 0) {
+				res.status(200).json({users: result.rows})
+			}
+		} catch (err) {
+			res.status(400)
+		}
+	})
+	.post(async (req, res) => {
+	
+	})
+	.put(async (req, res) => {
+	
+	})
+	.delete(async (req, res) => {
+	
 	})
 
 // AUTHENTICATION CHECK

@@ -9,6 +9,7 @@ import Exam from "./pages/Exam"
 import PageNotFound from "./pages/PageNotFound"
 import Login from "./Login"
 import axios from "axios"
+import Users from "./pages/Users"
 
 const server = 'https://localhost:8080'
 
@@ -180,16 +181,22 @@ const ExamApp = () => {
 			const getUserData = async () => {
 				const token = localStorage.getItem('access_token')
 				if (token) {
-					axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-					let userData = await axios({
-						method: 'get',
-						url:    server + '/RequestAccess'
-					})
-					console.log(userData.data)
-					dispatch({
-						type:    "SET_USER",
-						payload: {id: userData.data.id, role: userData.data.role, name: userData.data.username}
-					})
+					try {
+						axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+						let userData = await axios({
+							method: 'get',
+							url:    server + '/RequestAccess'
+						})
+						console.log(userData.data)
+						dispatch({
+							type:    "SET_USER",
+							payload: {id: userData.data.id, role: userData.data.role, name: userData.data.username}
+						})
+					} catch (err) {
+						if (err.response.data.message === 'Token expired') {
+							localStorage.removeItem('access_token')
+						}
+					}
 				}
 			}
 			getUserData()
@@ -209,6 +216,7 @@ const ExamApp = () => {
 						<Route path="*" element={<PageNotFound/>}/>
 						<Route path="/exams" element={<Exams server={server} content={content} dispatch={dispatch}/>}/>
 						<Route path="/exam" element={<Exam server={server} dispatch={dispatch} content={content}/>}/>
+						<Route path="/users" element={<Users server={server} user={content.user}/>}/>
 					</Routes>
 				</>
 			}
