@@ -120,3 +120,12 @@
     height: 1.25rem;
     cursor: pointer;
 }
+
+.user-container {
+    display: flex;
+}
+
+.user-container .username {
+    width: 4rem;
+    margin-right: 2rem;
+}

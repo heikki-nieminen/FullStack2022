@@ -10,23 +10,26 @@ const Login = (props) => {
 					username: username, password: password
 				}
 			})
+			console.log("?????")
 			if (res.data.correct === true) {
 				console.log(res.data)
 				props.dispatch({type: "LOGIN", payload: {id: res.data.id, role: res.data.role, token: res.data.token}})
 				//props.dispatch({type: "SET_USER", payload: {role: res.data.role, id: res.data.id}})
 				props.setLoginState(false)
-			} else {
-				console.log("TESTI")
+			}
+		} catch (err) {
+			console.log(err)
+			if (err.response.data.message === 'Wrong username or password') {
 				props.dispatch({type: "SET_ALERT", payload: "Käyttäjätunnus tai salasana väärin"})
 				let timeOutId
 				timeOutId = setTimeout(() => {
 					props.dispatch({type: "SET_ALERT", payload: ""})
 					clearTimeout(timeOutId)
 				}, 3000)
+			} else {
+				console.log(err)
+				props.dispatch({type: "SET_ALERT", payload: "Ei yhteyttä palvelimeen"})
 			}
-		} catch (err) {
-			console.log(err)
-			props.dispatch({type: "SET_ALERT", payload: "Ei yhteyttä palvelimeen"})
 		}
 	}
 	

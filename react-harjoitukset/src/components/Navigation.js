@@ -7,7 +7,15 @@ const Navigation = (props) => {
 		<div className="nav-bar">
 			<ul className="nav">
 				<li><Link to='/'>Etusivu</Link></li>
-				{props.content.user.loggedIn && <li><Link to='/exams'>Tentit</Link></li>}
+				{props.content.user.loggedIn &&
+					<>
+						<li><Link to='/exams'>Tentit</Link></li>
+						
+						{props.content.user.role === 'admin' &&
+							<li><Link to='/users'>Käyttäjät</Link></li>
+						}
+					</>
+				}
 			</ul>
 			<ul className="nav right">
 				{props.content.user.loggedIn ?
