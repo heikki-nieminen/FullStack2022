@@ -4,6 +4,8 @@ const cors = require('cors')
 const bcrypt = require('bcrypt')
 const {Pool, Client} = require('pg')
 const jwt = require('jsonwebtoken')
+const https = require('https')
+//const emailsender = require('./emailsender')
 
 const PORT = 8080
 
@@ -15,7 +17,6 @@ const pool = new Pool({
 	port:     5432,
 })
 
-const https = require('https')
 const app = express()
 
 const options = {
@@ -43,13 +44,26 @@ const verifyToken = async (req, res, next) => {
 	}
 }
 
+const isAdmin = async (req, res, next) => {
+	try {
+		const result = await pool.query('SELECT role FROM public.user WHERE username = $1', [req.decoded.username])
+		console.log(req.decoded.username)
+		if (result.rows[0].role === 'admin') {
+			next()
+		}
+	} catch (err) {
+		res.status(403).send("Pääsy evätty")
+	}
+}
+
 const server = https.createServer(options, app).listen(PORT, function () {
 	console.log("Express server listening on port " + PORT)
 })
+
 // ROOT ROUTE
 app.route('/')
 	.get(async (req, res) => {
-	
+		res.json({message: "Terve"})
 	})
 	.post(async (req, res) => {
 	
@@ -85,7 +99,7 @@ app.route('/exam')
 			if (result.rowCount) {
 				exam.name = result.rows[0].name
 				exam.id = result.rows[0].id
-				let questions = await pool.query('SELECT * FROM question WHERE exam_id=$1', [result.rows[0].id])
+				let questions = await pool.query('SELECT * FROM question WHERE exam_id=$1 ORDER by id ASC', [result.rows[0].id])
 				if (questions.rowCount) {
 					exam.questions = questions.rows
 				}
@@ -108,7 +122,7 @@ app.route('/exam')
 			res.status(400).send("Virhe haettaessa dataa")
 		}
 	})
-	.post(async (req, res) => {
+	.post(isAdmin, async (req, res) => {
 		const values = [req.body.examName]
 		try {
 			const result = await pool.query('INSERT INTO exam (name) VALUES ($1) RETURNING id', values)
@@ -118,7 +132,7 @@ app.route('/exam')
 			res.status(400).send(err)
 		}
 	})
-	.put(async (req, res) => {
+	.put(isAdmin, async (req, res) => {
 		const values = [req.body.examId, req.body.examName]
 		console.log(req.body)
 		try {
@@ -129,7 +143,7 @@ app.route('/exam')
 			res.status(400).send(err)
 		}
 	})
-	.delete(async (req, res) => {
+	.delete(isAdmin, async (req, res) => {
 		const values = [req.body.id]
 		// Käyttäjän vahvistus?
 		try {
@@ -146,13 +160,13 @@ app.route('/exam/question')
 	.get(async (req, res) => {
 		const questionId = req.query.id
 		try {
-			const result = await pool.query('SELECT * FROM answer WHERE question_id=$1', [questionId])
+			const result = await pool.query('SELECT * FROM answer WHERE question_id=$1 ORDER by id ASC', [questionId])
 			res.status(200).send(result.rows)
 		} catch (err) {
 			res.status(404).send("Virhe haettaessa dataa")
 		}
 	})
-	.post(async (req, res) => {
+	.post(isAdmin, async (req, res) => {
 		const values = [req.body.question, req.body.exam_id]
 		try {
 			const result = await pool.query('INSERT INTO question (question, exam_id) VALUES ($1,$2) RETURNING id', values)
@@ -162,7 +176,7 @@ app.route('/exam/question')
 			res.status(400).send(err)
 		}
 	})
-	.put(async (req, res) => {
+	.put(isAdmin, async (req, res) => {
 		const values = [req.body.id, req.body.question]
 		try {
 			const result = await pool.query('UPDATE question SET question=$2 WHERE id=$1', values)
@@ -172,7 +186,7 @@ app.route('/exam/question')
 			res.status(400).send(err)
 		}
 	})
-	.delete(async (req, res) => {
+	.delete(isAdmin, async (req, res) => {
 		const values = [req.body.id]
 		// VAHVISTUS
 		try {
@@ -196,7 +210,7 @@ app.route('/exam/question/answer')
 			res.status(404).send("Virhe haettaessa dataa")
 		}
 	})
-	.post(async (req, res) => {
+	.post(isAdmin, async (req, res) => {
 		const values = [req.body.answer, req.body.question_id, req.body.correct_answer]
 		try {
 			const result = await pool.query('INSERT INTO answer (answer, question_id, correct_answer) VALUES' +
@@ -208,7 +222,7 @@ app.route('/exam/question/answer')
 			res.status(400).send(err)
 		}
 	})
-	.put(async (req, res) => {
+	.put(isAdmin, async (req, res) => {
 		const values = [req.body.id, req.body.answer, req.body.isCorrect]
 		try {
 			const result = await pool.query('UPDATE answer SET answer=$2, correct_answer=$3 WHERE id=$1', values)
@@ -218,7 +232,7 @@ app.route('/exam/question/answer')
 			res.status(400)
 		}
 	})
-	.delete(async (req, res) => {
+	.delete(isAdmin, async (req, res) => {
 		const values = [req.body.id]
 		try {
 			const result = await pool.query('DELETE FROM answer WHERE id=$1', values)
@@ -235,6 +249,7 @@ app.route('/login')
 	
 	})
 	.post(async (req, res) => {
+		console.log("KIRJAUTUMINEN")
 		const username = req.body.username
 		const plainPassword = req.body.password
 		let token
@@ -291,6 +306,7 @@ app.route('/register')
 // USERS ROUTE
 app.route('/users')
 	.all(verifyToken)
+	.all(isAdmin)
 	.get(async (req, res) => {
 		try {
 			const result = await pool.query("SELECT * FROM public.user")
@@ -309,6 +325,16 @@ app.route('/users')
 	})
 	.delete(async (req, res) => {
 	
+	})
+
+app.route('/email')
+	.post(async (req, res) => {
+		const {email, subject, text} = req.body
+		try {
+			emailsender.send(email, subject, text)
+		} catch (err) {
+			console.log(err)
+		}
 	})
 
 // AUTHENTICATION CHECK

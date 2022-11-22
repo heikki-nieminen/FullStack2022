@@ -5,6 +5,7 @@ const Login = (props) => {
 	
 	const login = async (username, password) => {
 		try {
+			console.log("???")
 			let res = await axios({
 				method: 'post', url: props.server + '/login', data: {
 					username: username, password: password
