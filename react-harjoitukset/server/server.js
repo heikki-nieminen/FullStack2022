@@ -34,7 +34,7 @@ const verifyToken = async (req, res, next) => {
 			res.status(401).json({success: false, message: "Token was not provided"})
 		}
 		req.decoded = await jwt.verify(token, "salainenavain")
-		console.log(req.decoded)
+		//console.log(req.decoded)
 		next()
 	} catch (err) {
 		if (err.message === 'jwt expired') {
@@ -47,7 +47,7 @@ const verifyToken = async (req, res, next) => {
 const isAdmin = async (req, res, next) => {
 	try {
 		const result = await pool.query('SELECT role FROM public.user WHERE username = $1', [req.decoded.username])
-		console.log(req.decoded.username)
+		//console.log(req.decoded.username)
 		if (result.rows[0].role === 'admin') {
 			next()
 		}
@@ -309,7 +309,7 @@ app.route('/users')
 	.all(isAdmin)
 	.get(async (req, res) => {
 		try {
-			const result = await pool.query("SELECT * FROM public.user")
+			const result = await pool.query("SELECT * FROM public.user ORDER by id ASC")
 			if (result.rowCount > 0) {
 				res.status(200).json({users: result.rows})
 			}
@@ -321,10 +321,25 @@ app.route('/users')
 	
 	})
 	.put(async (req, res) => {
-	
+		try {
+			console.log(req.body)
+			const result = await pool.query("UPDATE public.user SET role=$1 WHERE id=$2", [req.body.role, req.body.id])
+			if (result.rowCount > 0) {
+				console.log("Päivitetty onnistuneesti")
+				res.status(200)
+			}
+		} catch (err) {
+			console.log(err)
+		}
 	})
 	.delete(async (req, res) => {
-	
+		try {
+			const result = await pool.query("DELETE FROM public.user WHERE id=$1", [req.body.id])
+			res.status(204)
+		} catch (err) {
+			console.log(err)
+			res.status(400)
+		}
 	})
 
 app.route('/email')
