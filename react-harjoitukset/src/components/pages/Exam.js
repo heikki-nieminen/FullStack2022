@@ -120,18 +120,21 @@ const Exam = (props) => {
 							<div className="exam-title">
 								{props.content.exam.name}
 							</div>
-							<img className="exam-image" src={edit} alt="Edit exam button" onClick={() => {
-								props.dispatch({type: "SET_EXAM_EDIT_MODE"})
-							}}/>
+							{props.content.user.role === "admin" &&
+								<img className="exam-image" src={edit} alt="Edit exam button" onClick={() => {
+									props.dispatch({type: "SET_EXAM_EDIT_MODE"})
+								}}/>
+							}
 						</div>
 						{props.content.exam.questions ?
-							<div>
+							<>
 								{props.content.exam.questions.map((item, index) => {
 									return (<Question key={index} server={props.server} question={item} id={index}
 									                  edit={props.content.exam.edit} initialized={props.content.initialized}
 									                  dispatch={props.dispatch}/>)
 								})}
-							</div>
+								{/*<button>Tallenna vastaukset</button>*/}
+							</>
 							:
 							<>
 								<p>Ei sisältöä</p>
@@ -149,9 +152,6 @@ const Exam = (props) => {
 											setAddQuestion(true)
 										}}>Lisää kysymys
 										</button>
-										{/*<button className="save-changes-button"
-                                                onClick={() => saveChanges(props.content.exam.id)}>Tallenna muutokset
-                                        </button>*/}
 									</div>
 								}
 							</>

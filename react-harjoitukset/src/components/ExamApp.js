@@ -216,7 +216,8 @@ const ExamApp = () => {
 						<Route path="*" element={<PageNotFound/>}/>
 						<Route path="/exams" element={<Exams server={server} content={content} dispatch={dispatch}/>}/>
 						<Route path="/exam" element={<Exam server={server} dispatch={dispatch} content={content}/>}/>
-						<Route path="/users" element={<Users server={server} user={content.user}/>}/>
+						<Route path="/users"
+						       element={<Users server={server} user={content.user} dispatch={dispatch} exams={content.exams}/>}/>
 					</Routes>
 				</>
 			}

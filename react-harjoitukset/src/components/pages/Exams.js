@@ -9,11 +9,8 @@ const Exams = (props) => {
 	const getExams = async () => {
 		try {
 			let res = await axios({
-				method: 'post',
+				method: 'get',
 				url:    props.server + '/exams',
-				data:   {
-					role: props.content.role
-				}
 			})
 			console.log(res.data)
 			props.dispatch({type: "SET_EXAMS", payload: res.data})
