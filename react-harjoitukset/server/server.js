@@ -385,6 +385,10 @@ app.get('/RequestAccess', verifyToken, (req, res) => {
 	res.status(200).json(req.decoded)
 })
 
+app.get('/isAdmin', [verifyToken, isAdmin], (req, res) => {
+	res.status(200).send(true)
+})
+
 // HASH PASSWORD
 const hashPassword = async (password) => {
 	return await bcrypt.hash(password, 10)

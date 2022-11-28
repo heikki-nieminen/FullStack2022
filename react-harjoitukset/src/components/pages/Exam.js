@@ -1,9 +1,10 @@
-import {useEffect, useState} from "react"
+import {useContext, useEffect, useState} from "react"
 import axios from "axios"
 import edit from './img/edit.png'
 import './styles.css'
 import {useSearchParams} from "react-router-dom"
 import Question from "./Question"
+import {UserContext} from "../context/UserContext"
 
 const Exam = (props) => {
 	
@@ -12,6 +13,8 @@ const Exam = (props) => {
 	const [isExamData, setIsExamData] = useState(false)
 	const [initializeData, setInitializeData] = useState(false)
 	
+	const currentUser = useContext(UserContext)
+	console.log(currentUser)
 	useEffect(() => {
 		props.dispatch({
 			type:    "SET_EXAM_ID",
@@ -133,7 +136,7 @@ const Exam = (props) => {
 									                  edit={props.content.exam.edit} initialized={props.content.initialized}
 									                  dispatch={props.dispatch}/>)
 								})}
-								{/*<button>Tallenna vastaukset</button>*/}
+								<button>Tallenna vastaukset</button>
 							</>
 							:
 							<>

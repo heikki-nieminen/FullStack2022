@@ -42,7 +42,7 @@ const Users = (props) => {
 			<>
 				{users.map((item, index) => {
 					return <User user={item} key={index} server={props.server} setUsers={setUsers} users={users}
-					             exams={props.exams}/>
+					             exams={props.exams} id={props.user.id}/>
 				})}
 			</>
 			:
@@ -84,12 +84,18 @@ const User = (props) => {
 	console.log(props)
 	return (<div className="user-container">
 		<p className="username">{props.user.username}</p>
-		<select id="role" defaultValue={props.user.role} onChange={(e) => {
-			updateUser({server: props.server, id: props.user.id, role: e.target.value})
-		}}>
-			<option value="admin">Admin</option>
-			<option value="user">User</option>
-		</select>
+		{props.id !== props.user.id ?
+			<select id="role" defaultValue={props.user.role} onChange={(e) => {
+				updateUser({server: props.server, id: props.user.id, role: e.target.value})
+			}}>
+				<option value="admin">Admin</option>
+				<option value="user">User</option>
+			</select>
+			:
+			<select id="role" defaultValue={props.user.role} disabled>
+				<option value="admin">Admin</option>
+			</select>
+		}
 		<button onClick={(e) => {
 			deleteUser({server: props.server, id: props.user.id, setUsers: props.setUsers})
 			props.setUsers((users) => users.filter((item) => item.id !== props.user.id))

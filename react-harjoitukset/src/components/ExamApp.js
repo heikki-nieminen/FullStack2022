@@ -1,7 +1,7 @@
 import './examApp.css'
 import {useEffect, useReducer, useState} from "react"
 import Navigation from "./Navigation"
-import {Route, Routes} from "react-router-dom"
+import {Outlet, Route, Routes} from "react-router-dom"
 import Home from "./pages/Home"
 import Exams from "./pages/Exams"
 import Register from "./Register"
@@ -10,8 +10,11 @@ import PageNotFound from "./pages/PageNotFound"
 import Login from "./Login"
 import axios from "axios"
 import Users from "./pages/Users"
+import AdminTesti from "./pages/AdminTesti"
 
-const server = 'https://localhost:8080'
+const server = process.env.REACT_APP_API_URL
+
+console.log("SERVER: ", process.env.REACT_APP_API_URL)
 
 const reducer = (state, action) => {
 	switch (action.type) {
@@ -98,10 +101,7 @@ const reducer = (state, action) => {
 		case "ADD_QUESTION" : {
 			let stateCopy = JSON.parse(JSON.stringify(state))
 			stateCopy.exam.questions.push({
-				id:       action.payload.id,
-				question: action.payload.question,
-				exam_id:  action.payload.examId,
-				answers:  []
+				id: action.payload.id, question: action.payload.question, exam_id: action.payload.examId, answers: []
 			})
 			return stateCopy
 		}
@@ -153,6 +153,11 @@ const reducer = (state, action) => {
 			let stateCopy = JSON.parse(JSON.stringify(state))
 			return stateCopy
 		}
+		case "SET_ADMIN" : {
+			let stateCopy = JSON.parse(JSON.stringify(state))
+			stateCopy.isAdmin = action.payload
+			return stateCopy
+		}
 	}
 }
 
@@ -166,7 +171,8 @@ const initialState = {
 	loggedIn:     false,
 	examId:       0,
 	exam:         {name: "", questions: []},
-	changes:      []
+	changes:      [],
+	isAdmin:      null
 }
 
 const ExamApp = () => {
@@ -177,6 +183,7 @@ const ExamApp = () => {
 	
 	// Initialize data and validate token
 	useEffect(() => {
+		console.log("USE EFFECT")
 		if (!initializeData) {
 			const getUserData = async () => {
 				const token = localStorage.getItem('access_token')
@@ -184,13 +191,13 @@ const ExamApp = () => {
 					try {
 						axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 						let userData = await axios({
-							method: 'get',
-							url:    server + '/RequestAccess'
+							method: 'get', url: server + '/RequestAccess'
 						})
 						console.log(userData.data)
+						let isAdmin = await checkIsAdmin()
+						dispatch({type: "SET_ADMIN", payload: isAdmin})
 						dispatch({
-							type:    "SET_USER",
-							payload: {id: userData.data.id, role: userData.data.role, name: userData.data.username}
+							type: "SET_USER", payload: {id: userData.data.id, role: userData.data.role, name: userData.data.username}
 						})
 					} catch (err) {
 						if (err.response.data.message === 'Token expired') {
@@ -201,31 +208,52 @@ const ExamApp = () => {
 			}
 			getUserData()
 			setInitializeData(true)
+			
 		}
 	}, [])
 	
-	return (
-		<div>
-			{initializeData &&
-				<>
-					<Navigation content={content} dispatch={dispatch} setLoginState={setLoginState}
-					            setRegisterState={setRegisterState} server={server}/>
-					
-					<Routes>
-						<Route path="/" element={<Home/>}/>
-						<Route path="*" element={<PageNotFound/>}/>
-						<Route path="/exams" element={<Exams server={server} content={content} dispatch={dispatch}/>}/>
-						<Route path="/exam" element={<Exam server={server} dispatch={dispatch} content={content}/>}/>
-						<Route path="/users"
-						       element={<Users server={server} user={content.user} dispatch={dispatch} exams={content.exams}/>}/>
-					</Routes>
-				</>
-			}
-			{loginState && <Login setLoginState={setLoginState} dispatch={dispatch} server={server}/>}
-			{registerState && <Register setRegisterState={setRegisterState} dispatch={dispatch} server={server}/>}
-			<p className="login-alert">{content.alert}</p>
-		</div>
-	)
+	const checkIsAdmin = async () => {
+		const result = await axios({
+			method: "get",
+			url:    server + "/isAdmin"
+		})
+		console.log("RESULT:", result.data)
+		return result.data
+	}
+	
+	const ProtectedRoute = async ({component: Component, isAdmin, ...rest}) => {
+		if (isAdmin) {
+			console.log("Ollaan admin")
+			return <Outlet/>
+		}
+		return <Home/>
+	}
+	console.log("isAdmin: ", content.isAdmin)
+	return (<div>
+		
+		{initializeData && <>
+			<Navigation content={content} dispatch={dispatch} setLoginState={setLoginState}
+			            setRegisterState={setRegisterState} server={server}/>
+			
+			<Routes>
+				
+				<Route path="/" element={<Home/>}/>
+				<Route path="*" element={<PageNotFound/>}/>
+				<Route path="admin" element={<AdminTesti/>}>
+				
+				</Route>
+				<Route path="/exams" element={<Exams server={server} content={content} dispatch={dispatch}/>}/>
+				<Route path="/exam" element={<Exam server={server} dispatch={dispatch} content={content}/>}/>
+				<Route path="/users"
+				       element={<Users server={server} user={content.user} dispatch={dispatch} exams={content.exams}/>}/>
+			</Routes>
+		
+		</>}
+		{loginState && <Login setLoginState={setLoginState} dispatch={dispatch} server={server}/>}
+		{registerState && <Register setRegisterState={setRegisterState} dispatch={dispatch} server={server}/>}
+		<p className="login-alert">{content.alert}</p>
+	
+	</div>)
 }
 
 export default ExamApp
