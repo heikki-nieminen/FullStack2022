@@ -13,7 +13,7 @@ client.connect(1337, '127.0.0.1', () => {
 });
 
 client.on('data', (data) => {
-	console.log(data.toString())
+	console.log(">"+data.toString())
 	rl.prompt()
 });
 

@@ -11,7 +11,7 @@ const server = net.createServer((socket) =>{
 			switch (command) {
 				case "/nickname" : {
 					socket.nickname = words[1]
-					console.log("TESTI")
+					socket.write("Nimimerkki vaihdettu")
 					break
 				}
 				case "/pm" : {
@@ -34,7 +34,9 @@ const server = net.createServer((socket) =>{
 		}
 		else{
 			chatters.forEach((item) => {
-				item.write(socket.nickname+": "+data)
+				if(socket.nickname !== item.nickname){
+					item.write(socket.nickname+": "+data)
+				}
 			})
 		}
 	});
